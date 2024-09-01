@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Country's Borders</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+        }
+
+        #game {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .input-container {
+            margin-top: 20px;
+        }
+
+        .input-container input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+        }
+
+        .input-container button:hover {
+            background-color: #555;
+        }
+
+        .back-button {
+            margin-top: 20px;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guess the Country's Land Borders</h1>
+    <div id="game">
+        <p id="country"></p>
+        <div class="input-container">
+            <input type="text" id="guess" placeholder="Enter a neighboring country">
+            <button onclick="checkGuess()">Submit</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+    <button class="back-button" onclick="location.href='index.html'">Back to Hub</button>
+
+    <script>
+        const countries = {
+            "France": ["Belgium", "Luxembourg", "Germany", "Switzerland", "Italy", "Monaco", "Spain", "Andorra"],
+            "Germany": ["Denmark", "Poland", "Czech Republic", "Austria", "Switzerland", "France", "Luxembourg", "Belgium", "Netherlands"],
+            // Add more countries and their borders here
+        };
+
+        const countryElement = document.getElementById('country');
+        const resultElement = document.getElementById('result');
+        const guessInput = document.getElementById('guess');
+
+        let currentCountry;
+
+        function getRandomCountry() {
+            const countryNames = Object.keys(countries);
+            return countryNames[Math.floor(Math.random() * countryNames.length)];
+        }
+
+        function startGame() {
+            currentCountry = getRandomCountry();
+            countryElement.textContent = `Which countries border ${currentCountry}?`;
+            resultElement.textContent = '';
+        }
+
+        function checkGuess() {
+            const userGuess = guessInput.value.trim();
+            if (countries[currentCountry].includes(userGuess)) {
+                resultElement.textContent = 'Correct! Well done.';
+                guessInput.value = '';
+                startGame();
+            } else {
+                resultElement.textContent = 'Incorrect. Try again!';
+            }
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #E91E63;
+        }
+
+        canvas {
+            background-color: #000;
+            border: 2px solid #fff;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .back-button, .play-again-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #E91E63;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-button:hover, .play-again-button:hover {
+            background-color: #D81B60;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Snake Game</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <button class="back-button" onclick="location.href='index.html'">Back to Home</button>
+    <button class="play-again-button hidden" id="playAgainButton">Play Again</button>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const box = 20; // Size of each box (snake part and food)
+        const canvasSize = canvas.width / box;
+
+        let snake, food, score, d;
+        let gameInterval;
+
+        function initGame() {
+            // Initialize game variables
+            snake = [{ x: 10, y: 10 }];
+            food = { x: Math.floor(Math.random() * canvasSize), y: Math.floor(Math.random() * canvasSize) };
+            score = 0;
+            d = '';
+            document.getElementById('playAgainButton').classList.add('hidden');
+            document.addEventListener('keydown', direction);
+            gameInterval = setInterval(draw, 100);
+        }
+
+        function direction(event) {
+            if (event.key === 'a' && d != 'RIGHT') d = 'LEFT';
+            else if (event.key === 'w' && d != 'DOWN') d = 'UP';
+            else if (event.key === 'd' && d != 'LEFT') d = 'RIGHT';
+            else if (event.key === 's' && d != 'UP') d = 'DOWN';
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the snake
+            ctx.fillStyle = 'green';
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillRect(snake[i].x * box, snake[i].y * box, box, box);
+            }
+
+            // Draw the food
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x * box, food.y * box, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (d == 'LEFT') snakeX--;
+            if (d == 'UP') snakeY--;
+            if (d == 'RIGHT') snakeX++;
+            if (d == 'DOWN') snakeY++;
+
+            // Check if snake has eaten the food
+            if (snakeX === food.x && snakeY === food.y) {
+                food = { x: Math.floor(Math.random() * canvasSize), y: Math.floor(Math.random() * canvasSize) };
+                score++;
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            // Check if the snake has collided with itself or the wall
+            if (snakeX < 0 || snakeX >= canvasSize || snakeY < 0 || snakeY >= canvasSize || collision(newHead, snake)) {
+                clearInterval(gameInterval);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('Game Over! Your final score is ' + score, canvas.width / 2 - 150, canvas.height / 2);
+                document.getElementById('playAgainButton').classList.remove('hidden');
+                document.removeEventListener('keydown', direction);
+                return;
+            }
+
+            snake.unshift(newHead);
+
+            // Update score display
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 20);
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) {
+                if (head.x === array[i].x && head.y === array[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        document.getElementById('playAgainButton').addEventListener('click', () => {
+            initGame();
+        });
+
+        // Initialize the game when the page loads
+        initGame();
+    </script>
+</body>
+</html>

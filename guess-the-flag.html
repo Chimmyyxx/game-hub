@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Flag</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #E91E63;
+        }
+
+        #flag-image {
+            width: 300px;
+            height: auto;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        #guess-input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        #submit-guess {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #E91E63;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit-guess:hover {
+            background-color: #D81B60;
+        }
+
+        #result {
+            font-size: 18px;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        #score {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #4CAF50;
+        }
+
+        .back-button, .play-again-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #E91E63;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-button:hover, .play-again-button:hover {
+            background-color: #D81B60;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guess the Flag</h1>
+    <div id="game-container">
+        <img id="flag-image" src="" alt="Flag" />
+        <div>
+            <input type="text" id="guess-input" placeholder="Enter flag name" />
+            <button id="submit-guess">Submit Guess</button>
+        </div>
+        <p id="result"></p>
+        <p id="score">Score: 0/0</p>
+    </div>
+    <button class="back-button hidden" id="back-button" onclick="location.href='index.html'">Back to Home</button>
+    <button class="play-again-button hidden" id="play-again-button" onclick="resetGame()">Play Again</button>
+
+    <script>
+        const flagData = [
+            { name: "Argentina", image: "flags/argentina.png" },
+            { name: "China", image: "flags/china.png" },
+            { name: "Cuba", image: "flags/cuba.png" },
+            { name: "Germany", image: "flags/germany.png" },
+            { name: "Italy", image: "flags/italy.png" },
+            { name: "Mexico", image: "flags/mexico.png" },
+            { name: "Monaco", image: "flags/monaco.png" },
+            { name: "Poland", image: "flags/poland.png" },
+            { name: "Portugal", image: "flags/portugal.png" },
+            { name: "Serbia", image: "flags/serbia.png" },
+            { name: "Slovakia", image: "flags/slovakia.png" },
+            { name: "Slovenia", image: "flags/slovenia.png" },
+            { name: "Sweden", image: "flags/sweden.png" },
+            { name: "Turkey", image: "flags/turkey.png" }
+        ];
+
+        let flagArray = [...flagData];
+        let currentFlag;
+        let score = 0;
+        let attempts = 0;
+
+        function getRandomFlag() {
+            if (flagArray.length === 0) {
+                endGame();
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * flagArray.length);
+            const selectedFlag = flagArray.splice(randomIndex, 1)[0];
+            return selectedFlag;
+        }
+
+        function displayNewFlag() {
+            currentFlag = getRandomFlag();
+            if (currentFlag) {
+                document.getElementById('flag-image').src = currentFlag.image;
+                document.getElementById('result').textContent = '';
+                document.getElementById('guess-input').value = '';
+            }
+        }
+
+        function checkGuess() {
+            const userGuess = document.getElementById('guess-input').value.trim().toLowerCase();
+            if (userGuess === currentFlag.name.toLowerCase()) {
+                score++;
+                document.getElementById('result').textContent = 'Correct! Well done!';
+            } else {
+                document.getElementById('result').textContent = 'Incorrect. Try again!';
+            }
+            attempts++;
+            updateScore();
+            displayNewFlag();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}/${attempts}`;
+        }
+
+        function endGame() {
+            document.getElementById('game-container').classList.add('hidden');
+            document.getElementById('back-button').classList.remove('hidden');
+            document.getElementById('play-again-button').classList.remove('hidden');
+            document.getElementById('result').textContent = `Game over! Your final score is ${score}/${attempts}.`;
+        }
+
+        function resetGame() {
+            flagArray = [...flagData];
+            score = 0;
+            attempts = 0;
+            updateScore();
+            document.getElementById('game-container').classList.remove('hidden');
+            document.getElementById('back-button').classList.add('hidden');
+            document.getElementById('play-again-button').classList.add('hidden');
+            displayNewFlag();
+        }
+
+        document.getElementById('submit-guess').addEventListener('click', checkGuess);
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', displayNewFlag);
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #tic-tac-toe {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background-color: #444;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .back-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div id="tic-tac-toe">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <div id="result"></div>
+    <button class="back-button" onclick="location.href='index.html'">Back to Hub</button>
+
+    <script>
+        const cells = document.querySelectorAll('[data-cell]');
+        const result = document.getElementById('result');
+        let turn = 'X'; // Player starts first
+        let board = Array(9).fill(null);
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleClick);
+        });
+
+        function handleClick(e) {
+            const index = Array.from(cells).indexOf(e.target);
+
+            if (board[index] || checkWinner(board) || turn === 'O') return;
+
+            board[index] = turn;
+            e.target.textContent = turn;
+
+            if (checkWinner(board)) {
+                result.textContent = `${turn} Wins!`;
+                return;
+            }
+
+            if (board.every(cell => cell)) {
+                result.textContent = 'Draw!';
+                return;
+            }
+
+            turn = 'O';
+            setTimeout(aiMove, 500); // AI move delayed by 500ms
+        }
+
+        function aiMove() {
+            const emptyIndices = board.map((cell, index) => cell === null ? index : null).filter(index => index !== null);
+            if (emptyIndices.length === 0) return;
+
+            const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            board[randomIndex] = 'O';
+            cells[randomIndex].textContent = 'O';
+
+            if (checkWinner(board)) {
+                result.textContent = 'O Wins!';
+                return;
+            }
+
+            if (board.every(cell => cell)) {
+                result.textContent = 'Draw!';
+            }
+
+            turn = 'X';
+        }
+
+        function checkWinner(board) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+    </script>
+</body>
+</html>
